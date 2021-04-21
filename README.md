@@ -23,6 +23,13 @@ Configuração inicial de um projeto React Native que uso no meu dia a dia.
 ~ yarn add expo-cli -g
 ```` 
 
+* Baixeo o código fonte:
+```
+~ git clone https://github.com/NEVI0/react-native-project-structure.git
+
+~ git clone git@github.com:NEVI0/react-native-project-structure.git
+```
+
 * Na raíz do projeto `react-native-project-structure/` instale as dependencias do projeto:
 ````
 ~ npm install
