@@ -23,7 +23,7 @@ Configuração inicial de um projeto React Native que uso no meu dia a dia.
 ~ yarn add expo-cli -g
 ```` 
 
-* Baixeo o código fonte:
+* Baixe o código fonte:
 ```
 ~ git clone https://github.com/NEVI0/react-native-project-structure.git
 
