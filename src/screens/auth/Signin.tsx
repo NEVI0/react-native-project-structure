@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 
 import Button from '../../components/Button';
@@ -9,9 +9,14 @@ import AppContext, { AppContextType } from '../../contexts/AppContext';
 
 const Signin: React.FC<StackScreenProps<any>> = ({ navigation }) => {
 
-	const { globalColor, changeTheme } = useContext<AppContextType>(AppContext);
+	const { globalColor, signin, changeTheme } = useContext<AppContextType>(AppContext);
 
 	const [ showAppLoading, setShowAppLoading ] = useState<boolean>(false);
+
+	const handleSignin = () => {
+		setShowAppLoading(true);
+		setTimeout(() => signin(), 2000);
+	}
 
 	useEffect(() => {
 		(async () => {
@@ -21,18 +26,24 @@ const Signin: React.FC<StackScreenProps<any>> = ({ navigation }) => {
 	}, []);
 
 	return (
-		<View style={{ flex: 1 }}>
+		<View style={[ styles.container, { backgroundColor: globalColor.gray } ]}>
 
-			<View style={[ styles.content, { backgroundColor: globalColor.gray } ]}>
-				<Text style={[ styles.message, { color: globalColor.text } ]}>
-					Start editing Signin.tsx file!
-				</Text>
+			<Text style={[ styles.text, { color: globalColor.text } ]}>
+				Start editing Signin.tsx file!
+			</Text>
 
+			<View style={{ paddingVertical: 25 }}>
 				<Button 
-					text="Mudar Tema"
-					onPress={ changeTheme }
+					text="Sign In"
+					onPress={ handleSignin }
 				/>
 			</View>
+
+			<TouchableOpacity onPress={ changeTheme }>
+				<Text style={[ styles.text, { color: globalColor.primary } ]}>
+					Change Theme
+				</Text>
+			</TouchableOpacity>
 
 			<Loading visible={ showAppLoading } />
 
@@ -42,14 +53,13 @@ const Signin: React.FC<StackScreenProps<any>> = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
-	content: {
+	container: {
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center'
 	},
-	message: {
-		fontFamily: 'default-b',
-		marginBottom: 20
+	text: {
+		fontFamily: 'default-b'
 	}
 });
 
