@@ -9,12 +9,12 @@ import AppContext, { AppContextType } from '../contexts/AppContext';
 
 const Routes: React.FC = () => {
 
-	const { globalColor } = useContext<AppContextType>(AppContext);
+	const { isSigned, globalColor } = useContext<AppContextType>(AppContext);
 
 	return (
 		<>
 			<NavigationContainer>
-				{ true ? <AppFlow /> : <AuthFlow /> }
+				{ isSigned ? <AppFlow /> : <AuthFlow /> }
 			</NavigationContainer>
 
 			<StatusBar
