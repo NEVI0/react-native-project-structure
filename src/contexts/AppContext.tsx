@@ -4,9 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GlobalColor, GlobalError } from '../utils/types';
 
 export interface AppContextType {
+	isSigned: boolean;
 	globalColor: GlobalColor;
 	globalError: GlobalError;
 
+	signin(): Promise<void>;
+	signout(): Promise<void>;
 	changeTheme(): void;
 
 	createGlobalError(err: any): void;
@@ -17,6 +20,7 @@ const AppContext: React.Context<AppContextType | any> = createContext({});
 
 export const AppProvider: React.FC = ({ children }) => {
 	
+	const [ isSigned, setIsSigned ] = useState<boolean>(false);
 	const [ globalError, setGlobalError ] = useState<GlobalError | string>('');
 	const [ globalColor, setGlobalColor ] = useState<GlobalColor>({
 		primary: '#156aea',
@@ -29,7 +33,12 @@ export const AppProvider: React.FC = ({ children }) => {
 		(async () => {
 			try {
 				
+				const isSignedStorage = await AsyncStorage.getItem('@APP:signed');
 				const isDarkMode = await AsyncStorage.getItem('@APP:darkmode');
+
+				if (isSignedStorage) {
+					setIsSigned(true);
+				}
 
 				if (isDarkMode == 'true') {
 					setGlobalColor({ primary: '#156aea', background: '#090b0f', text: '#fff', gray: '#0a0a0c' });
@@ -42,6 +51,24 @@ export const AppProvider: React.FC = ({ children }) => {
 			}
 		})();
 	}, []);
+
+	const signin = async () => {
+		try {
+			await AsyncStorage.setItem('@APP:signed', 'true');
+			setIsSigned(true);
+		} catch (err) {
+			createGlobalError(err);
+		}
+	}
+
+	const signout = async () => {
+		try {
+			await AsyncStorage.removeItem('@APP:signed');
+			setIsSigned(false);
+		} catch (err) {
+			createGlobalError(err);
+		}
+	}
 
 	const changeTheme = async () => {
 
@@ -78,9 +105,12 @@ export const AppProvider: React.FC = ({ children }) => {
 	return (
 		<AppContext.Provider
 			value={{
+				isSigned,
 				globalColor,
 				globalError,
 
+				signin,
+				signout,
 				changeTheme,
 
 				createGlobalError,
