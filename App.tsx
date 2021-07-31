@@ -5,15 +5,14 @@ import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
 
 import { AppProvider } from './src/contexts/AppContext';
-
 import Routes from './src/routes';
 
 const App: React.FC = () => {
 
 	const [ loaded ] = Font.useFonts({
-		'default-r': require('./assets/fonts/Nunito-Regular.ttf'),
-		'default-b': require('./assets/fonts/Nunito-Bold.ttf'),
-		'custom': require('./assets/fonts/Audiowide-Regular.ttf')
+		'nunito-regular': require('./assets/fonts/Nunito-Regular.ttf'),
+		'nunito-bold': require('./assets/fonts/Nunito-Bold.ttf'),
+		'audiowide-regular': require('./assets/fonts/Audiowide-Regular.ttf')
 	});
 
 	if (!loaded) {

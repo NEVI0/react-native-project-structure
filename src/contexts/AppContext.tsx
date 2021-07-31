@@ -1,33 +1,16 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, useContext, createContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { GlobalColor, GlobalError } from '../utils/types';
+import { AppContextType } from '../utils/types';
 
-export interface AppContextType {
-	isSigned: boolean;
-	globalColor: GlobalColor;
-	globalError: GlobalError;
-
-	signin(): Promise<void>;
-	signout(): Promise<void>;
-	changeTheme(): void;
-
-	createGlobalError(err: any): void;
-	clearGlobalError(): void;
-}
-
-const AppContext: React.Context<AppContextType | any> = createContext({});
+const AppContext: React.Context<AppContextType> = createContext({} as AppContextType);
 
 export const AppProvider: React.FC = ({ children }) => {
 	
 	const [ isSigned, setIsSigned ] = useState<boolean>(false);
-	const [ globalError, setGlobalError ] = useState<GlobalError | string>('');
-	const [ globalColor, setGlobalColor ] = useState<GlobalColor>({
-		primary: '#156aea',
-		background: '#fff',
-		text: '#090b0f',
-		gray: '#f2f2f2'
-	});
+	const [ isInDarkMode, setIsInDarkMode ] = useState<boolean>(false);
+
+	const [ globalError, setGlobalError ] = useState<string>('');
 
 	useEffect(() => {
 		(async () => {
@@ -36,15 +19,8 @@ export const AppProvider: React.FC = ({ children }) => {
 				const isSignedStorage = await AsyncStorage.getItem('@APP:signed');
 				const isDarkMode = await AsyncStorage.getItem('@APP:darkmode');
 
-				if (isSignedStorage) {
-					setIsSigned(true);
-				}
-
-				if (isDarkMode == 'true') {
-					setGlobalColor({ primary: '#156aea', background: '#090b0f', text: '#fff', gray: '#0a0a0c' });
-				} else {
-					setGlobalColor({ primary: '#156aea', background: '#fff', text: '#090b0f', gray: '#f2f2f2' });
-				}
+				setIsSigned(isSignedStorage ? true : false);
+				setIsInDarkMode(isDarkMode == 'true');
 
 			} catch (err) {
 				console.log('Start AppContext.tsx error: ', err);
@@ -72,14 +48,14 @@ export const AppProvider: React.FC = ({ children }) => {
 
 	const changeTheme = async () => {
 
-		await AsyncStorage.removeItem('@APP:darkmode');
+		const isDarkMode = await AsyncStorage.getItem('@APP:darkmode');
 
-		if (globalColor.background == '#fff') {
-			await AsyncStorage.setItem('@APP:darkmode', 'true');
-			setGlobalColor({ primary: '#156aea', background: '#090b0f', text: '#fff', gray: '#0a0a0c' });
-		} else {
+		if (isDarkMode === 'true') {
 			await AsyncStorage.setItem('@APP:darkmode', 'false');
-			setGlobalColor({ primary: '#156aea', background: '#fff', text: '#090b0f', gray: '#f2f2f2' });
+			setIsInDarkMode(false);
+		} else {
+			await AsyncStorage.setItem('@APP:darkmode', 'true');
+			setIsInDarkMode(true);
 		}
 
 	}
@@ -106,7 +82,7 @@ export const AppProvider: React.FC = ({ children }) => {
 		<AppContext.Provider
 			value={{
 				isSigned,
-				globalColor,
+				isInDarkMode,
 				globalError,
 
 				signin,
@@ -114,7 +90,7 @@ export const AppProvider: React.FC = ({ children }) => {
 				changeTheme,
 
 				createGlobalError,
-				clearGlobalError,
+				clearGlobalError
 			}}
 		>
 			{ children }
@@ -123,4 +99,5 @@ export const AppProvider: React.FC = ({ children }) => {
 
 }
 
-export default AppContext;
+const useAppContext = () => useContext(AppContext);
+export default useAppContext;

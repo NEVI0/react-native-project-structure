@@ -1,18 +1,26 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { ThemeProvider } from 'styled-components';
 
 import AppFlow from './AppFlow';
 import AuthFlow from './AuthFlow';
+import Alert from '../components/Alert';
 
-import AppContext, { AppContextType } from '../contexts/AppContext';
+import useAppContext from '../contexts/AppContext';
+import createTheme from '../styles/theme';
 
 const Routes: React.FC = () => {
 
-	const { isSigned, globalColor } = useContext<AppContextType>(AppContext);
+	const {
+		isSigned,
+		isInDarkMode,
+		globalError,
+		clearGlobalError
+	} = useAppContext();
 
 	return (
-		<>
+		<ThemeProvider theme={ createTheme(isInDarkMode) }>
 			<NavigationContainer>
 				{ isSigned ? <AppFlow /> : <AuthFlow /> }
 			</NavigationContainer>
@@ -21,9 +29,19 @@ const Routes: React.FC = () => {
 				animated={ true }
 				translucent={ true }
 				backgroundColor="transparent"
-				barStyle={ globalColor.background == '#fff' ? 'dark-content' : 'light-content' } 
+				barStyle={ isInDarkMode ? 'light-content' : 'dark-content' } 
 			/>
-		</>
+
+			{
+				globalError !== '' && (
+					<Alert 
+						visible={ true }
+						message={ globalError }
+						onClose={ clearGlobalError }
+					/>
+				)
+			}
+		</ThemeProvider>
 	);
 
 }
